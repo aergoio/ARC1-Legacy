@@ -1,0 +1,64 @@
+reset
+
+# deploy token contract
+# owner: AmgXAhYMSwQKo2Cgm5AaErEQBBPW66vnFagMd2fn7nry92TfMZuG
+# simpleToken: Amg5wF9SMcjo8GFHsQS1Q3R5VoYMmkBhF6EmZg9jrscdm2S1S7iD
+# user1: Amg25cfD4ibjmjPYbtWnMKocrF147gJJxKy5uuFymEBNF2YiPwzr
+# operator: Amfzhv6pzRBm4U4p7evxiAYaz5VWghAYnDb8MfFuH4XWeZ9pGy4a
+# tokenReceiver: AmhJRxQVmNaAQVhgcKe63jsNs3qv5HCUignuB2BEWYYW72U2iemV
+
+# deploy token and token receiver contract
+deploy owner 0 simpleToken ../out.lua
+deploy ctrOwner 0 tokenReceiver ../../receiver/sampleTokenReceiver.lua `["Amg5wF9SMcjo8GFHsQS1Q3R5VoYMmkBhF6EmZg9jrscdm2S1S7iD"]`
+
+# charge Aergo to contract
+inject tokenReceiver 10000000000000000000
+
+# charge initial token
+call owner 0 simpleToken transfer `["Amg25cfD4ibjmjPYbtWnMKocrF147gJJxKy5uuFymEBNF2YiPwzr", {"_bignum":"100000000000000000000000000"}]`
+
+# ================================
+# burn
+# ================================
+# burn owner's token
+call owner 0 simpleToken burn `[{"_bignum":"400000000000000000000000000"}]`
+query simpleToken balanceOf `["AmgXAhYMSwQKo2Cgm5AaErEQBBPW66vnFagMd2fn7nry92TfMZuG"]` `{"_bignum":"0"}`
+query simpleToken totalSupply `[]` `{"_bignum":"100000000000000000000000000"}`
+
+# burn user1's token
+call user1 0 simpleToken burn `[{"_bignum":"100000000000000000000000000"}]`
+query simpleToken balanceOf `["Amg25cfD4ibjmjPYbtWnMKocrF147gJJxKy5uuFymEBNF2YiPwzr"]` `{"_bignum":"0"}`
+query simpleToken totalSupply `[]` `{"_bignum":"0"}`
+
+# ================================
+# mint
+# ================================
+# mint by owner
+call owner 0 simpleToken mint `[{"_bignum":"1000000"}]`
+query simpleToken balanceOf `["AmgXAhYMSwQKo2Cgm5AaErEQBBPW66vnFagMd2fn7nry92TfMZuG"]` `{"_bignum":"1000000"}`
+query simpleToken totalSupply `[]` `{"_bignum":"1000000"}`
+
+# Error: mint by non-owner
+call user1 0 simpleToken mint `[{"_bignum":"1000000"}]` `only contract owner can mint`
+
+# ================================
+# burnFrom - account
+# ================================
+# owner approves to operator
+call owner 0 simpleToken setApprovalForAll `["Amfzhv6pzRBm4U4p7evxiAYaz5VWghAYnDb8MfFuH4XWeZ9pGy4a", true]`
+# operator burn owner's token
+call operator 0 simpleToken burnFrom `["AmgXAhYMSwQKo2Cgm5AaErEQBBPW66vnFagMd2fn7nry92TfMZuG", {"_bignum":"100000"}]`
+query simpleToken balanceOf `["AmgXAhYMSwQKo2Cgm5AaErEQBBPW66vnFagMd2fn7nry92TfMZuG"]` `{"_bignum":"900000"}`
+query simpleToken totalSupply `[]` `{"_bignum":"900000"}`
+
+# disable approve
+call owner 0 simpleToken setApprovalForAll `["Amfzhv6pzRBm4U4p7evxiAYaz5VWghAYnDb8MfFuH4XWeZ9pGy4a", false]`
+# Error: try to burn again. it must be fail
+call operator 0 simpleToken burnFrom `["AmgXAhYMSwQKo2Cgm5AaErEQBBPW66vnFagMd2fn7nry92TfMZuG", {"_bignum":"100000"}]` `caller is not approved for holder`
+
+# ================================
+# burnFrom - contract
+# ================================
+call owner 0 simpleToken setApprovalForAll `["AmhJRxQVmNaAQVhgcKe63jsNs3qv5HCUignuB2BEWYYW72U2iemV", true]`
+call owner 0 tokenReceiver contractBurnFrom `[{"_bignum":"200000"}, 1, 2, "3"]`
+query simpleToken balanceOf `["AmgXAhYMSwQKo2Cgm5AaErEQBBPW66vnFagMd2fn7nry92TfMZuG"]` `{"_bignum":"700000"}`

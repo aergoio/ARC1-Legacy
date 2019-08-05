@@ -1,0 +1,6 @@
+{
+  "name" : "aergo-contract-ex/simpletoken",
+  "source" : "simpleToken.lua",
+  "target" : "out.lua",
+  "tests": []
+}

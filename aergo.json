@@ -1,0 +1,6 @@
+{
+  "name" : "aergoio/ARC1Token",
+  "source" : "src/AToken.lua",
+  "target" : "target/out.lua",
+  "tests": [ "test/ship-token.lua" ]
+}

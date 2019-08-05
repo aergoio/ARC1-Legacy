@@ -1,0 +1,31 @@
+batch ./init.brick
+
+# charge token owner -> user1
+call owner 0 simpleToken transfer `["Amg25cfD4ibjmjPYbtWnMKocrF147gJJxKy5uuFymEBNF2YiPwzr", {"_bignum":"10000000000000000000"}]`
+
+# ================================
+# tokenReceived
+# ================================
+# send token to contract
+call user1 0 simpleToken transfer `["AmhJRxQVmNaAQVhgcKe63jsNs3qv5HCUignuB2BEWYYW72U2iemV", {"_bignum":"1000000000000000000"}, true, "first arg", 2, {"table":1}, ""]`
+
+# user1 token remains
+query simpleToken balanceOf `["Amg25cfD4ibjmjPYbtWnMKocrF147gJJxKy5uuFymEBNF2YiPwzr"]` `{"_bignum":"9000000000000000000"}`
+query simpleToken balanceOf `["AmhJRxQVmNaAQVhgcKe63jsNs3qv5HCUignuB2BEWYYW72U2iemV"]` `{"_bignum":"1000000000000000000"}`
+# contract gives aergo to user1
+getstate user1 `1000000000000000000`
+
+# Error: error at tokensReceived
+call user1 0 simpleToken transfer `["AmhJRxQVmNaAQVhgcKe63jsNs3qv5HCUignuB2BEWYYW72U2iemV", {"_bignum":"1000000000000000000"}, false]` `contract is fail`
+query simpleToken balanceOf `["Amg25cfD4ibjmjPYbtWnMKocrF147gJJxKy5uuFymEBNF2YiPwzr"]` `{"_bignum":"9000000000000000000"}`
+query simpleToken balanceOf `["AmhJRxQVmNaAQVhgcKe63jsNs3qv5HCUignuB2BEWYYW72U2iemV"]` `{"_bignum":"1000000000000000000"}`
+# contract gives aergo to user1
+getstate user1 `1000000000000000000`
+
+# ================================
+# no tokenReceived
+# ================================
+# deploy contract
+# nonTokenReceiver: AmhFYigp1ytZiRMgfzYx2yZvjgWyrEV1Briy7t62Cf5KLgiCw7hJ
+deploy ctrOwner 0 nonTokenReceiver ../../receiver/nonTokenReceiver.lua
+call user1 0 simpleToken transfer `["AmhFYigp1ytZiRMgfzYx2yZvjgWyrEV1Briy7t62Cf5KLgiCw7hJ", {"_bignum":"1000000000000000000"}]` `not found function: tokensReceived`

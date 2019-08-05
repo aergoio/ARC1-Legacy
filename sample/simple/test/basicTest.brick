@@ -1,0 +1,59 @@
+batch ./init.brick
+
+# query token meta data
+query simpleToken name `[]` `"simpleToken"`
+query simpleToken symbol `[]` `"SYM"`
+query simpleToken decimals `[]` `18`
+query simpleToken totalSupply `[]` `{"_bignum":"500000000000000000000000000"}`
+
+# check balance of owner
+query simpleToken balanceOf `["AmgXAhYMSwQKo2Cgm5AaErEQBBPW66vnFagMd2fn7nry92TfMZuG"]` `{"_bignum":"500000000000000000000000000"}`
+
+# ================================
+# transfer
+# ================================
+call owner 0 simpleToken transfer `["Amg25cfD4ibjmjPYbtWnMKocrF147gJJxKy5uuFymEBNF2YiPwzr", {"_bignum":"30000000000000000000000000"}]`
+query simpleToken balanceOf `["Amg25cfD4ibjmjPYbtWnMKocrF147gJJxKy5uuFymEBNF2YiPwzr"]` `{"_bignum":"30000000000000000000000000"}`
+query simpleToken balanceOf `["AmgXAhYMSwQKo2Cgm5AaErEQBBPW66vnFagMd2fn7nry92TfMZuG"]` `{"_bignum":"470000000000000000000000000"}`
+
+# Error: insufficient fund
+call owner 0 simpleToken transfer `["Amg25cfD4ibjmjPYbtWnMKocrF147gJJxKy5uuFymEBNF2YiPwzr", {"_bignum":"9000000000000000000000000000000"}]` `not enough balance`
+
+# Error: minus value
+call owner 0 simpleToken transfer `["Amg25cfD4ibjmjPYbtWnMKocrF147gJJxKy5uuFymEBNF2YiPwzr", {"_bignum":"-100000"}]` `must be positive number`
+
+# Error: invalid type
+call owner 0 simpleToken transfer `["Amg25cfD4ibjmjPYbtWnMKocrF147gJJxKy5uuFymEBNF2YiPwzr", 100000]` `invalid type: number != ubig`
+
+# ================================
+# transferFrom by normal account
+# ================================
+# setApprovalForAll - normal account (deprecated but for testing)
+call user1 0 simpleToken setApprovalForAll `["Amfzhv6pzRBm4U4p7evxiAYaz5VWghAYnDb8MfFuH4XWeZ9pGy4a", true]`
+query simpleToken isApprovedForAll `["Amg25cfD4ibjmjPYbtWnMKocrF147gJJxKy5uuFymEBNF2YiPwzr", "Amfzhv6pzRBm4U4p7evxiAYaz5VWghAYnDb8MfFuH4XWeZ9pGy4a"]` `true`
+
+# transferFrom user1 -> operator
+call operator 0 simpleToken transferFrom  `["Amg25cfD4ibjmjPYbtWnMKocrF147gJJxKy5uuFymEBNF2YiPwzr", "Amfzhv6pzRBm4U4p7evxiAYaz5VWghAYnDb8MfFuH4XWeZ9pGy4a", {"_bignum":"10000000000000000000000000"}]`
+query simpleToken balanceOf `["Amg25cfD4ibjmjPYbtWnMKocrF147gJJxKy5uuFymEBNF2YiPwzr"]` `{"_bignum":"20000000000000000000000000"}`
+query simpleToken balanceOf `["Amfzhv6pzRBm4U4p7evxiAYaz5VWghAYnDb8MfFuH4XWeZ9pGy4a"]` `{"_bignum":"10000000000000000000000000"}`
+
+# disable setApprovalForAll
+call user1 0 simpleToken setApprovalForAll `["Amfzhv6pzRBm4U4p7evxiAYaz5VWghAYnDb8MfFuH4XWeZ9pGy4a", false]`
+# error; because operator no longer has permission
+call operator 0 simpleToken transferFrom  `["Amg25cfD4ibjmjPYbtWnMKocrF147gJJxKy5uuFymEBNF2YiPwzr", "Amfzhv6pzRBm4U4p7evxiAYaz5VWghAYnDb8MfFuH4XWeZ9pGy4a", {"_bignum":"10000000000000000000000000"}]` `caller is not approved for holder`
+
+# ================================
+# transferFrom by contract
+# ================================
+
+# setApprovalForAll - contract
+call user1 0 simpleToken setApprovalForAll `["AmhJRxQVmNaAQVhgcKe63jsNs3qv5HCUignuB2BEWYYW72U2iemV", true]`
+query simpleToken isApprovedForAll `["Amg25cfD4ibjmjPYbtWnMKocrF147gJJxKy5uuFymEBNF2YiPwzr", "AmhJRxQVmNaAQVhgcKe63jsNs3qv5HCUignuB2BEWYYW72U2iemV"]` `true`
+
+# transferFrom contract -> operator
+call user1 0 tokenReceiver contractTransferFrom `["AmgXAhYMSwQKo2Cgm5AaErEQBBPW66vnFagMd2fn7nry92TfMZuG", {"_bignum":"10000000000000000000000000"}]`
+query simpleToken balanceOf `["Amg25cfD4ibjmjPYbtWnMKocrF147gJJxKy5uuFymEBNF2YiPwzr"]` `{"_bignum":"10000000000000000000000000"}`
+query simpleToken balanceOf `["AmhJRxQVmNaAQVhgcKe63jsNs3qv5HCUignuB2BEWYYW72U2iemV"]` `{"_bignum":"0"}`
+
+# disable setApprovalForAll
+call user1 0 simpleToken setApprovalForAll `["AmhJRxQVmNaAQVhgcKe63jsNs3qv5HCUignuB2BEWYYW72U2iemV", false]`

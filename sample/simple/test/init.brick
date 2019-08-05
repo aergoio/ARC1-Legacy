@@ -1,0 +1,15 @@
+reset
+
+# deploy token contract
+# owner: AmgXAhYMSwQKo2Cgm5AaErEQBBPW66vnFagMd2fn7nry92TfMZuG
+# simpleToken: Amg5wF9SMcjo8GFHsQS1Q3R5VoYMmkBhF6EmZg9jrscdm2S1S7iD
+# user1: Amg25cfD4ibjmjPYbtWnMKocrF147gJJxKy5uuFymEBNF2YiPwzr
+# operator: Amfzhv6pzRBm4U4p7evxiAYaz5VWghAYnDb8MfFuH4XWeZ9pGy4a
+# tokenReceiver: AmhJRxQVmNaAQVhgcKe63jsNs3qv5HCUignuB2BEWYYW72U2iemV
+
+# deploy token and token receiver contract
+deploy owner 0 simpleToken ../out.lua
+deploy ctrOwner 0 tokenReceiver ../../receiver/sampleTokenReceiver.lua `["Amg5wF9SMcjo8GFHsQS1Q3R5VoYMmkBhF6EmZg9jrscdm2S1S7iD"]`
+
+# charge Aergo to contract
+inject tokenReceiver 10000000000000000000
