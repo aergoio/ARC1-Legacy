@@ -10,7 +10,7 @@ Compared to the widely known ERC-20, the interface is somewhat different. The fo
 
 After a single delegation of authority (`setApprovedForAll`) to a trusted contract, the contract will be able to manage my tokens. For example, if you approve tokens to a Distributed Exchange (Dex) contract, you can trade directly without having to deposit and withdraw your token before trading.
 
-ARC-1 Exension is here : https://github.com/aergoio/ARC1-Extensions
+ARC-1 Extension is here : https://github.com/aergoio/ARC1-Extensions
 
 
 ## Specification
