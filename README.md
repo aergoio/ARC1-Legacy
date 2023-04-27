@@ -1,6 +1,11 @@
-# Aergo Standard Token Contract, ARC-1
+# Aergo Standard Token Contract, ARC-1 (Legacy)
 
-This defines interface and behaviors for aergo token contract.
+This repository contains the first steps in the development of the ARC1 standard
+
+It is no longer maintained
+
+For the updated version of the ARC1 standard, check here: https://github.com/aergoio/ARC1
+
 
 ## Abstract
 
@@ -9,8 +14,6 @@ ARC-1 is a technical standard used for smart contracts on the Aergo blockchain f
 Compared to the widely known ERC-20, the interface is somewhat different. The following points were improved. If the target to receive the token is a contract, check that the corresponding contract manages the token by checking for a predefined function (`tokenReceived`). This can prevent token loss. It is also possible to transfer tokens and perform contracts by calling a predefined function directly in one transaction.
 
 After a single delegation of authority (`setApprovedForAll`) to a trusted contract, the contract will be able to manage my tokens. For example, if you approve tokens to a Distributed Exchange (Dex) contract, you can trade directly without having to deposit and withdraw your token before trading.
-
-ARC-1 Extension is here : https://github.com/aergoio/ARC1-Extensions
 
 
 ## Specification
